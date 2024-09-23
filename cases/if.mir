@@ -1,0 +1,99 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test_basic_block_if() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let mut _4: bool;
+    let mut _5: (&i32, &i32);
+    let mut _6: &i32;
+    let mut _7: &i32;
+    let mut _10: bool;
+    let mut _11: i32;
+    let mut _12: i32;
+    let _14: !;
+    let mut _15: std::option::Option<std::fmt::Arguments<'_>>;
+    scope 1 {
+        debug a => _1;
+        let _2: i32;
+        scope 2 {
+            debug b => _2;
+            let _3: i32;
+            scope 3 {
+                debug max => _3;
+                let _8: &i32;
+                let _9: &i32;
+                scope 4 {
+                    debug left_val => _8;
+                    debug right_val => _9;
+                    let _13: core::panicking::AssertKind;
+                    scope 5 {
+                        debug kind => _13;
+                    }
+                }
+            }
+        }
+    }
+
+    bb0: {
+        _1 = const 5_i32;
+        _2 = const 10_i32;
+        _4 = Gt(copy _1, copy _2);
+        switchInt(move _4) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _3 = copy _1;
+        goto -> bb3;
+    }
+
+    bb2: {
+        _3 = copy _2;
+        goto -> bb3;
+    }
+
+    bb3: {
+        _6 = &_3;
+        _7 = const test_basic_block_if::promoted[0];
+        _5 = (move _6, move _7);
+        _8 = copy (_5.0: &i32);
+        _9 = copy (_5.1: &i32);
+        _11 = copy (*_8);
+        _12 = copy (*_9);
+        _10 = Eq(move _11, move _12);
+        switchInt(move _10) -> [0: bb5, otherwise: bb4];
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5: {
+        _13 = core::panicking::AssertKind::Eq;
+        _15 = Option::<Arguments<'_>>::None;
+        _14 = core::panicking::assert_failed::<i32, i32>(move _13, copy _8, copy _9, move _15) -> unwind continue;
+    }
+}
+
+const test_basic_block_if::promoted[0]: &i32 = {
+    let mut _0: &i32;
+    let mut _1: i32;
+
+    bb0: {
+        _1 = const 10_i32;
+        _0 = &_1;
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = test_basic_block_if() -> [return: bb1, unwind continue];
+    }
+
+    bb1: {
+        return;
+    }
+}

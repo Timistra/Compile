@@ -28,7 +28,9 @@ const PREC = {
     name: 'mir',
   
     extras: $ => [
-  
+      $.line_comment,
+      $.block_comment,
+      /\s/,
     ],
   
     supertypes: $ => [
@@ -56,12 +58,12 @@ const PREC = {
   
       type: $ => choice(
         $.primitive_type,          
-        $.pointer_type,            
-        $.array_type,              
-        $.tuple_type,              
-        $.reference_type,  
-        $.qualified_path,  // <Type as Trait>::method
-        $.path_type,       // Prefix Path
+        //$.pointer_type,            
+        //$.array_type,              
+        //$.tuple_type,              
+        //$.reference_type,  
+        //$.qualified_path,  // <Type as Trait>::method
+        //$.path_type,       // Prefix Path
       ),
       
       primitive_type: $ => choice(
@@ -71,12 +73,10 @@ const PREC = {
       // Declarations
       parameters: $ => commaSep1($.parameter),
   
-      parameter: $ => seq(
-  
-      ),
+      parameter: $ => seq($.identifier,':',$.primitive_type),
   
       declaration: $ => choice(
-        $.variable_declaration,
+        //$.variable_declaration,
         $.function_declaration,
       ),
   
@@ -84,12 +84,10 @@ const PREC = {
         $.function_header, 
         $.function_body, 
       )),
-  
-      function_header: $ => seq(
-        
-      ),
-  
-      function_body: $ => seq(
+
+      function_header: $ => seq('fn ',$.identifier,'(',optional($.parameters),')',' -> ',choice('()',$.primitive_type)),
+
+      function_body: $ => seq('{',repeat($.statement),'}'
   
       ),
   
@@ -97,13 +95,13 @@ const PREC = {
       // Statementss
       statement: $ => prec(PREC.STATEMENT, choice(
         $.assignment_statement,
-        $.drop_statement,
-        $.return_statement,
-        $.block,
-        $.basic_block,
-        $.scope,
-        $.debug_statement,
-        $.assert_statement,
+        //$.drop_statement,
+        //$.return_statement,
+        //$.block,
+        //$.basic_block,
+        //$.scope,
+        //$.debug_statement,
+        //$.assert_statement,
      )),
   
       assignment_statement: $ => prec.left(PREC.ASSIGN, seq(
@@ -117,19 +115,19 @@ const PREC = {
       expression: $ => prec.left(PREC.CALL, choice(
         $.binary_expression, 
         $.unary_expression,
-        $.function_call_expression,
-        $._lvalue,
-        $._rvalue,
-        $.const_expression,
-        $.copy_expression,
-        $.move_expression,
-        $.tuple_access_expression,
-        $.tuple_expression,
-        $.array_expression,
-        $.as_expression,
-        $.struct_initialization_expression,
-        $.complex_value,
-        $.parenthesized_expression,
+        //$.function_call_expression,
+        //$._lvalue,
+        //$._rvalue,
+        //$.const_expression,
+        //$.copy_expression,
+        //$.move_expression,
+        //$.tuple_access_expression,
+        //$.tuple_expression,
+        //$.array_expression,
+        //$.as_expression,
+        //$.struct_initialization_expression,
+        //$.complex_value,
+        //$.parenthesized_expression,
       )),
   
       binary_expression: $ => choice(
@@ -139,8 +137,8 @@ const PREC = {
       unary_expression: $ => prec.left(PREC.UNARY, choice(
         seq('!', $.expression),
         seq('-', $.expression),
-        $.address_of_expression,
-        $.dereference_expression,
+        //$.address_of_expression,
+        //$.dereference_expression,
       )),
   
       _lvalue: $ => choice(
@@ -174,7 +172,15 @@ const PREC = {
       bytes: $ => /b".*"/,
   
       static_string: $ => /\".*\"/,
-  
+
+      comment: $ => choice(
+        $.line_comment,
+        $.block_comment,
+      ),
+
+      line_comment: _ => token(prec(PREC.COMMENT, seq('//',  /.*/))),
+
+      block_comment: _ => token(prec(PREC.COMMENT, seq('/*', /[^*]*\*+([^/*][^*]*\*+)*/, '/'))),
     },
   });
   

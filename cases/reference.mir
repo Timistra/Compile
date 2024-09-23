@@ -1,0 +1,71 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn reference_example(_1: &i32) -> i32 {
+    debug x => _1;
+    let mut _0: i32;
+    scope 1 {
+        debug y => _0;
+    }
+
+    bb0: {
+        _0 = copy (*_1);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let _3: &i32;
+    let _4: ();
+    let mut _5: std::fmt::Arguments<'_>;
+    let _6: &[&str; 2];
+    let _7: &[core::fmt::rt::Argument<'_>; 1];
+    let _8: [core::fmt::rt::Argument<'_>; 1];
+    let mut _9: core::fmt::rt::Argument<'_>;
+    let _10: &i32;
+    scope 1 {
+        debug x => _1;
+        let _2: i32;
+        scope 2 {
+            debug ref_result => _2;
+        }
+    }
+
+    bb0: {
+        _1 = const 42_i32;
+        _3 = &_1;
+        _2 = reference_example(copy _3) -> [return: bb1, unwind continue];
+    }
+
+    bb1: {
+        _6 = const main::promoted[0];
+        _10 = &_2;
+        _9 = core::fmt::rt::Argument::<'_>::new_display::<i32>(copy _10) -> [return: bb2, unwind continue];
+    }
+
+    bb2: {
+        _8 = [move _9];
+        _7 = &_8;
+        _5 = Arguments::<'_>::new_v1::<2, 1>(copy _6, copy _7) -> [return: bb3, unwind continue];
+    }
+
+    bb3: {
+        _4 = _print(move _5) -> [return: bb4, unwind continue];
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+const main::promoted[0]: &[&str; 2] = {
+    let mut _0: &[&str; 2];
+    let mut _1: [&str; 2];
+
+    bb0: {
+        _1 = [const "Result of reference_example(&42): ", const "\n"];
+        _0 = &_1;
+        return;
+    }
+}

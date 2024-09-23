@@ -1,0 +1,68 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn tuple_access() -> i32 {
+    let mut _0: i32;
+    let _1: (i32, i32);
+    scope 1 {
+        debug tup => _1;
+        scope 2 {
+            debug first => _0;
+        }
+    }
+
+    bb0: {
+        _1 = (const 10_i32, const 20_i32);
+        _0 = copy (_1.0: i32);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: i32;
+    let _2: ();
+    let mut _3: std::fmt::Arguments<'_>;
+    let _4: &[&str; 2];
+    let _5: &[core::fmt::rt::Argument<'_>; 1];
+    let _6: [core::fmt::rt::Argument<'_>; 1];
+    let mut _7: core::fmt::rt::Argument<'_>;
+    let _8: &i32;
+    scope 1 {
+        debug tuple_result => _1;
+    }
+
+    bb0: {
+        _1 = tuple_access() -> [return: bb1, unwind continue];
+    }
+
+    bb1: {
+        _4 = const main::promoted[0];
+        _8 = &_1;
+        _7 = core::fmt::rt::Argument::<'_>::new_display::<i32>(copy _8) -> [return: bb2, unwind continue];
+    }
+
+    bb2: {
+        _6 = [move _7];
+        _5 = &_6;
+        _3 = Arguments::<'_>::new_v1::<2, 1>(copy _4, copy _5) -> [return: bb3, unwind continue];
+    }
+
+    bb3: {
+        _2 = _print(move _3) -> [return: bb4, unwind continue];
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+const main::promoted[0]: &[&str; 2] = {
+    let mut _0: &[&str; 2];
+    let mut _1: [&str; 2];
+
+    bb0: {
+        _1 = [const "Result of tuple_access(): ", const "\n"];
+        _0 = &_1;
+        return;
+    }
+}

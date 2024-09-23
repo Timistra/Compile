@@ -1,0 +1,131 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn <impl at trait.rs:13:1: 13:22>::area(_1: &Circle) -> f64 {
+    debug self => _1;
+    let mut _0: f64;
+    let mut _2: f64;
+    let mut _3: f64;
+    let mut _4: f64;
+
+    bb0: {
+        _3 = copy ((*_1).0: f64);
+        _2 = Mul(const std::f64::consts::PI, move _3);
+        _4 = copy ((*_1).0: f64);
+        _0 = Mul(move _2, move _4);
+        return;
+    }
+}
+
+fn <impl at trait.rs:26:1: 26:25>::area(_1: &Rectangle) -> f64 {
+    debug self => _1;
+    let mut _0: f64;
+    let mut _2: f64;
+    let mut _3: f64;
+
+    bb0: {
+        _2 = copy ((*_1).0: f64);
+        _3 = copy ((*_1).1: f64);
+        _0 = Mul(move _2, move _3);
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: Circle;
+    let _3: ();
+    let mut _4: std::fmt::Arguments<'_>;
+    let _5: &[&str; 2];
+    let _6: &[core::fmt::rt::Argument<'_>; 1];
+    let _7: [core::fmt::rt::Argument<'_>; 1];
+    let mut _8: core::fmt::rt::Argument<'_>;
+    let _9: &f64;
+    let _10: f64;
+    let mut _11: &Circle;
+    let _12: ();
+    let mut _13: std::fmt::Arguments<'_>;
+    let _14: &[&str; 2];
+    let _15: &[core::fmt::rt::Argument<'_>; 1];
+    let _16: [core::fmt::rt::Argument<'_>; 1];
+    let mut _17: core::fmt::rt::Argument<'_>;
+    let _18: &f64;
+    let _19: f64;
+    let mut _20: &Rectangle;
+    scope 1 {
+        debug circle => _1;
+        let _2: Rectangle;
+        scope 2 {
+            debug rectangle => _2;
+        }
+    }
+
+    bb0: {
+        _1 = Circle { radius: const 5f64 };
+        _2 = Rectangle { width: const 4f64, height: const 6f64 };
+        _5 = const main::promoted[1];
+        _11 = &_1;
+        _10 = <Circle as Shape>::area(move _11) -> [return: bb1, unwind continue];
+    }
+
+    bb1: {
+        _9 = &_10;
+        _8 = core::fmt::rt::Argument::<'_>::new_display::<f64>(copy _9) -> [return: bb2, unwind continue];
+    }
+
+    bb2: {
+        _7 = [move _8];
+        _6 = &_7;
+        _4 = Arguments::<'_>::new_v1::<2, 1>(copy _5, copy _6) -> [return: bb3, unwind continue];
+    }
+
+    bb3: {
+        _3 = _print(move _4) -> [return: bb4, unwind continue];
+    }
+
+    bb4: {
+        _14 = const main::promoted[0];
+        _20 = &_2;
+        _19 = <Rectangle as Shape>::area(move _20) -> [return: bb5, unwind continue];
+    }
+
+    bb5: {
+        _18 = &_19;
+        _17 = core::fmt::rt::Argument::<'_>::new_display::<f64>(copy _18) -> [return: bb6, unwind continue];
+    }
+
+    bb6: {
+        _16 = [move _17];
+        _15 = &_16;
+        _13 = Arguments::<'_>::new_v1::<2, 1>(copy _14, copy _15) -> [return: bb7, unwind continue];
+    }
+
+    bb7: {
+        _12 = _print(move _13) -> [return: bb8, unwind continue];
+    }
+
+    bb8: {
+        return;
+    }
+}
+
+const main::promoted[0]: &[&str; 2] = {
+    let mut _0: &[&str; 2];
+    let mut _1: [&str; 2];
+
+    bb0: {
+        _1 = [const "Rectangle area: ", const "\n"];
+        _0 = &_1;
+        return;
+    }
+}
+
+const main::promoted[1]: &[&str; 2] = {
+    let mut _0: &[&str; 2];
+    let mut _1: [&str; 2];
+
+    bb0: {
+        _1 = [const "Circle area: ", const "\n"];
+        _0 = &_1;
+        return;
+    }
+}

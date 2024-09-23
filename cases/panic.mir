@@ -1,0 +1,44 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn test_panic() -> () {
+    let mut _0: ();
+    let _1: [i32; 3];
+    let mut _2: bool;
+    let mut _3: usize;
+    let mut _4: &[i32];
+    let mut _5: &[i32; 3];
+    let _6: !;
+    scope 1 {
+        debug arr => _1;
+    }
+
+    bb0: {
+        _1 = [const 1_i32, const 2_i32, const 3_i32];
+        _5 = &_1;
+        _4 = move _5 as &[i32] (PointerCoercion(Unsize));
+        _3 = PtrMetadata(move _4);
+        _2 = Gt(move _3, const 5_usize);
+        switchInt(move _2) -> [0: bb2, otherwise: bb1];
+    }
+
+    bb1: {
+        _6 = begin_panic::<&str>(const "Array index out of bounds") -> unwind continue;
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn main() -> () {
+    let mut _0: ();
+    let _1: ();
+
+    bb0: {
+        _1 = test_panic() -> [return: bb1, unwind continue];
+    }
+
+    bb1: {
+        return;
+    }
+}
