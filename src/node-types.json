@@ -110,7 +110,7 @@
           "named": true
         },
         {
-          "type": "primitive_type",
+          "type": "returns",
           "named": true
         }
       ]
@@ -175,6 +175,25 @@
     }
   },
   {
+    "type": "returns",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "primitive_type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "statement",
     "named": true,
     "fields": {},
@@ -205,19 +224,15 @@
     }
   },
   {
-    "type": " -> ",
-    "named": false
-  },
-  {
     "type": "!",
     "named": false
   },
   {
-    "type": "(",
+    "type": "&",
     "named": false
   },
   {
-    "type": "()",
+    "type": "(",
     "named": false
   },
   {
@@ -230,6 +245,10 @@
   },
   {
     "type": "-",
+    "named": false
+  },
+  {
+    "type": "->",
     "named": false
   },
   {
@@ -277,7 +296,7 @@
     "named": true
   },
   {
-    "type": "fn ",
+    "type": "fn",
     "named": false
   },
   {

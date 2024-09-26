@@ -73,7 +73,9 @@ const PREC = {
       // Declarations
       parameters: $ => commaSep1($.parameter),
   
-      parameter: $ => seq($.identifier,':',$.primitive_type),
+      parameter: $ => seq($.identifier,':',choice($.primitive_type,seq('&',choice($.primitive_type,$.identifier)))),
+
+      returns: $ => choice(seq('(',commaSep(choice($.identifier,$.primitive_type)),')'),choice($.identifier,$.primitive_type)),
   
       declaration: $ => choice(
         //$.variable_declaration,
@@ -85,7 +87,7 @@ const PREC = {
         $.function_body, 
       )),
 
-      function_header: $ => seq('fn ',$.identifier,'(',optional($.parameters),')',' -> ',choice('()',$.primitive_type)),
+      function_header: $ => seq('fn',$.identifier,'(',optional($.parameters),')','->',$.returns),
 
       function_body: $ => seq('{',repeat($.statement),'}'
   
