@@ -58,39 +58,95 @@ const PREC = {
   
       type: $ => choice(
         $.primitive_type,          
-        //$.pointer_type,            
-        //$.array_type,              
-        //$.tuple_type,              
+        $.pointer_type,            
+        $.array_type,              
+        $.tuple_type,              
         //$.reference_type,  
         //$.qualified_path,  // <Type as Trait>::method
         //$.path_type,       // Prefix Path
       ),
       
-      primitive_type: $ => choice(
+      primitive_type: _ => choice(
         'i32', 'u32', 'i64', 'u64', 'f32', 'f64', 'bool', 'char', 'str', 'usize'
+      ),
+
+      pointer_type: $ => seq(
+        '*',
+        choice('const','mut'),
+        choice(
+          $.primitive_type,
+          seq('(',')'),
+        )
+      ),
+
+      array_type: $ => seq(
+        '[',
+        $.primitive_type,
+        ';',
+        $.int,
+        ']'
+      ),
+
+      tuple_type: $ => seq(
+        '(',
+        commaSep1($.identifier),
+        ')',
       ),
       
       // Declarations
       parameters: $ => commaSep1($.parameter),
   
-      parameter: $ => seq($.identifier,':',choice($.primitive_type,seq('&',choice($.primitive_type,$.identifier)))),
+      parameter: $ => seq(
+        $.identifier,
+        ':',
+        $.type,
+      ),
 
-      returns: $ => choice(seq('(',commaSep(choice($.identifier,$.primitive_type)),')'),choice($.identifier,$.primitive_type)),
+      returns: $ => choice(
+        seq(
+          '(',
+          commaSep($.type),
+          ')',
+        ),
+        $.type,
+      ),
   
       declaration: $ => choice(
-        //$.variable_declaration,
+        $.variable_declaration,
         $.function_declaration,
       ),
   
+      variable_declaration: $ => seq(
+        'let',
+        optional('mut'),
+        $.identifier,
+        ':',
+        choice(
+            $.type, 
+            seq('(', ')'),
+        ),
+        ';',
+      ),
+
       function_declaration: $ => prec.left(seq(
         $.function_header, 
         $.function_body, 
       )),
 
-      function_header: $ => seq('fn',$.identifier,'(',optional($.parameters),')','->',$.returns),
+      function_header: $ => seq(
+        'fn',
+        $.identifier,
+        '(',
+        optional($.parameters),
+        ')',
+        '->',
+        $.returns
+      ),
 
-      function_body: $ => seq('{',repeat($.statement),'}'
-  
+      function_body: $ => seq(
+        '{',
+        optional(repeat(choice($.declaration,$.statement))),
+        '}',
       ),
   
   
@@ -117,11 +173,10 @@ const PREC = {
       expression: $ => prec.left(PREC.CALL, choice(
         $.binary_expression, 
         $.unary_expression,
-        //$.function_call_expression,
-        //$._lvalue,
-        //$._rvalue,
-        //$.const_expression,
-        //$.copy_expression,
+        $.function_call_expression,
+        $._lvalue,
+        $.const_expression,
+        $.copy_expression,
         //$.move_expression,
         //$.tuple_access_expression,
         //$.tuple_expression,
@@ -142,15 +197,43 @@ const PREC = {
         //$.address_of_expression,
         //$.dereference_expression,
       )),
+
+      function_call_expression: $ => seq(
+        $.identifier,
+        '(',
+        commaSep($.expression),
+        ')',
+        ';',
+      ),
   
       _lvalue: $ => choice(
-  
+        $.identifier,
+        $.field_access,
+        $.array_access,
+      ),
+
+      field_access: $ => seq(
+        $.identifier,
+        '.',
+        $._lvalue,
+      ),
+
+      array_access: $ => seq(
+        $.identifier,
+        '[',
+        $.expression,
+        ']',
       ),
       
-      _rvalue: $ => choice(
-     
+      const_expression: $ => choice(
+        $.constant,
       ),
-  
+
+      copy_expression: $ => seq(
+        'copy',
+        $.expression,
+      ),
+
       // Constants
       constant: $ => choice(
         $.int,                       
@@ -161,19 +244,19 @@ const PREC = {
         $.static_string,                      
       ),
       
-      identifier: $ => /[_a-zA-Z][_a-zA-Z0-9]*/,
+      identifier: _ => /[_a-zA-Z][_a-zA-Z0-9]*/,
   
-      int: $ => /\d+/,
+      int: _ => /\d+/,
   
-      uint: $ => /\d+u\d*/,
+      uint: _ => /\d+u\d*/,
   
-      float: $ => /\d+\.\d+/,
+      float: _ => /\d+\.\d+/,
   
-      bool: $ => choice('true','false'),
+      bool: _ => choice('true','false'),
   
-      bytes: $ => /b".*"/,
+      bytes: _ => /b".*"/,
   
-      static_string: $ => /\".*\"/,
+      static_string: _ => /\".*\"/,
 
       comment: $ => choice(
         $.line_comment,
@@ -224,3 +307,26 @@ const PREC = {
     return optional(commaSep1(rule));
   }
   
+  /**
+  * Creates a rule to match one or more of the rules separated by a point
+  *
+  * @param {RuleOrLiteral} rule
+  *
+  * @return {SeqRule}
+  *
+  */
+  function pointSep1(rule) {
+    return seq(rule, repeat(seq('.', rule)));
+  }
+    
+  /**
+    * Creates a rule to optionally match one or more of the rules separated by a point
+    *
+    * @param {RuleOrLiteral} rule
+    *
+    * @return {ChoiceRule}
+    *
+    */
+  function pointSep(rule) {
+    return optional(pointSep1(rule));
+  }

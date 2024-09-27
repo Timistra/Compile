@@ -1,0 +1,31 @@
+fn test() -> () {
+    let mut _0: ();
+    let _1: [i32; 5];
+    let _2: i32;
+    let _3: usize;
+    let mut _4: usize;
+    let mut _5: bool;
+    let _6: (_1, _2); 
+    let mut _7: *const i32;
+    let mut _8: *mut ();
+
+    let mut _9: usize; 
+    let mut _10: usize; 
+    let mut _11: usize;
+    let mut _12: usize;
+    let mut _13: bool;
+
+  
+
+    _2 = _1[_3];
+
+    _4 = copy _3;
+
+    _11 = Sub(copy _10, copy _9); 
+
+    _12 = BitAnd(copy _9, copy _11);
+    
+    _13 = Eq(copy _12, copy _11); 
+
+    
+}
