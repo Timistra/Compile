@@ -61,36 +61,39 @@ const PREC = {
         $.pointer_type,            
         $.array_type,              
         $.tuple_type,              
-        //$.reference_type,  
+        $.reference_type,  
         //$.qualified_path,  // <Type as Trait>::method
         //$.path_type,       // Prefix Path
       ),
       
-      primitive_type: _ => choice(
-        'i32', 'u32', 'i64', 'u64', 'f32', 'f64', 'bool', 'char', 'str', 'usize'
+      primitive_type: $ => choice(
+        'i32', 'u32', 'i64', 'u64', 'f32', 'f64', 'bool', 'char', 'str', 'usize', '()', $.identifier,
       ),
 
       pointer_type: $ => seq(
         '*',
         choice('const','mut'),
-        choice(
-          $.primitive_type,
-          seq('(',')'),
-        )
+        $.primitive_type,
       ),
 
       array_type: $ => seq(
         '[',
         $.primitive_type,
         ';',
-        $.int,
-        ']'
+        field('array_length',$.int),
+        ']',
       ),
 
       tuple_type: $ => seq(
         '(',
         commaSep1($.identifier),
         ')',
+      ),
+
+      reference_type: $ => seq(
+        '&',
+        choice('const','mut'),
+        $.primitive_type,
       ),
       
       // Declarations
@@ -102,7 +105,7 @@ const PREC = {
         $.type,
       ),
 
-      returns: $ => choice(
+      return_type: $ => choice(
         seq(
           '(',
           commaSep($.type),
@@ -121,10 +124,7 @@ const PREC = {
         optional('mut'),
         $.identifier,
         ':',
-        choice(
-            $.type, 
-            seq('(', ')'),
-        ),
+        $.type,
         ';',
       ),
 
@@ -140,15 +140,14 @@ const PREC = {
         optional($.parameters),
         ')',
         '->',
-        $.returns
+        $.return_type,
       ),
 
       function_body: $ => seq(
         '{',
-        optional(repeat(choice($.declaration,$.statement))),
+        repeat(choice($.declaration,$.statement)),
         '}',
       ),
-  
   
       // Statementss
       statement: $ => prec(PREC.STATEMENT, choice(
@@ -156,7 +155,7 @@ const PREC = {
         //$.drop_statement,
         //$.return_statement,
         //$.block,
-        //$.basic_block,
+        $.basic_block,
         //$.scope,
         //$.debug_statement,
         //$.assert_statement,
@@ -168,6 +167,22 @@ const PREC = {
         field('right', choice($.expression)), 
         ';',
       )),
+
+      basic_block: $=> seq(
+        $.identifier,
+        ':',
+        '{',
+        repeat(choice($.declaration,$.statement)),
+        $.terminator,
+        '}',
+      ),
+
+      terminator: $ => seq(
+        choice(
+          seq('return',';'),
+          seq('goto','->',$.identifier,';'),
+        ),
+    ),
   
       // Expressions
       expression: $ => prec.left(PREC.CALL, choice(
@@ -177,14 +192,15 @@ const PREC = {
         $._lvalue,
         $.const_expression,
         $.copy_expression,
-        //$.move_expression,
+        $.move_expression,
         //$.tuple_access_expression,
         //$.tuple_expression,
         //$.array_expression,
         //$.as_expression,
-        //$.struct_initialization_expression,
+        $.struct_initialization_expression,
         //$.complex_value,
         //$.parenthesized_expression,
+        $.address_expression,
       )),
   
       binary_expression: $ => choice(
@@ -198,6 +214,23 @@ const PREC = {
         //$.dereference_expression,
       )),
 
+      struct_initialization_expression: $ => seq(
+        $.identifier,
+        '{',
+        commaSep(seq(
+          $.identifier,
+          ':',
+          $.expression,
+        )),
+        '}',
+      ),
+
+      parenthesized_expression: $ => seq(
+        '(',
+        $.expression,
+        ')',
+      ),
+
       function_call_expression: $ => seq(
         $.identifier,
         '(',
@@ -205,15 +238,25 @@ const PREC = {
         ')',
         ';',
       ),
+
+      address_expression: $ => seq(
+        '&',
+        '(',
+        $._lvalue,
+        ':',
+        $.type,
+        ')',
+      ),
   
       _lvalue: $ => choice(
         $.identifier,
         $.field_access,
         $.array_access,
+        $.reference_access,
       ),
 
       field_access: $ => seq(
-        $.identifier,
+        choice($.identifier,$.array_access,seq('(',$.reference_access,')')),
         '.',
         $._lvalue,
       ),
@@ -221,16 +264,26 @@ const PREC = {
       array_access: $ => seq(
         $.identifier,
         '[',
-        $.expression,
+        field('array_address',$.expression),
         ']',
       ),
       
+      reference_access: $ => seq(
+        '*',
+        $._lvalue,
+      ),
+
       const_expression: $ => choice(
         $.constant,
       ),
 
       copy_expression: $ => seq(
         'copy',
+        $.expression,
+      ),
+
+      move_expression: $ => seq(
+        'move',
         $.expression,
       ),
 

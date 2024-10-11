@@ -1,0 +1,32 @@
+fn transform_shape(_1: &mut Shape, _2: f64, _3: f64) -> Shape {
+    let mut _0: Shape;  
+    let _4: *const f64;  
+    let _5: *const f64;  
+    let _6: *const f64;  
+    let _7: f64;  
+    let _8: f64;  
+    let _9: f64;  
+    let _10: [f64; 5];
+    let _11: i32;
+    let _12: f64
+
+    bb0: {
+        _0 = Shape { radius: move _2 };
+        _4 = &((*_1).0: f64);  
+        _5 = &((*_1).1: f64);  
+        _7 = Mul(*_4, _2);
+        _8 = Mul(*_5, _3);
+        (*_1).0 = move _7;
+        (*_1).1 = move _8;
+        goto -> bb1;
+    }
+
+    bb1: {
+        _12 = _10[_11];
+        _6 = &((*_1)._12: f64);  
+        _9 = Mul(*_6, _2);
+        (*_1)._12 = move _9;
+        _0 = *(_1);  
+        return;
+    }
+}
